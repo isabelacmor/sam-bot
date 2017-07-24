@@ -23,7 +23,8 @@ var username_key = 'UserName';
 var userWelcomed_key = 'UserWelcomed';
 var currentFeeling_key = "CurrentFeeling";
 
-// This is a bot that uses multiple dialogs to prompt users for input.
+
+// This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
     function (session) {
         //session.send("Welcome to the dinner reservation.");
