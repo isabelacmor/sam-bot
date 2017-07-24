@@ -18,37 +18,40 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 // Local storage
+var HelpMessage = '\n * This is the help message';
 var username_key = 'UserName';
 var userWelcomed_key = 'UserWelcomed';
+var currentFeeling_key = "CurrentFeeling";
 
-// Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
-var bot = new builder.UniversalBot(connector, function (session) {
-    //session.send("You said: %s", session.message.text);
+// This is a bot that uses multiple dialogs to prompt users for input.
+var bot = new builder.UniversalBot(connector, [
+    function (session) {
+        //session.send("Welcome to the dinner reservation.");
+        // is user's name set?
+        var userName = session.userData[username_key];
+        if (!userName) {
+            return session.beginDialog('greet');
+        }
 
-    // is user's name set?
-    var userName = session.userData[username_key];
-    if (!userName) {
-        return session.beginDialog('greet');
+        // has the user been welcomed to the conversation?
+        if (!session.privateConversationData[userWelcomed_key]) {
+            session.privateConversationData[userWelcomed_key] = true;
+            session.send('Welcome back %s! Remember the rules: %s', userName, HelpMessage);
+        }
+
+        session.beginDialog('askForFeeling');
+    },
+    function (session, results) {
+        session.userData[currentFeeling_key] = results.response;
+        session.beginDialog('processFeeling');
+    },
+    function (session, results) {
+        // Process request and do action request by user.
+        session.send("You were feeling: %s. You chose: %s",
+            session.userData[currentFeeling_key], results.response);
+        session.endDialog();
     }
-
-    // has the user been welcomed to the conversation?
-    if (!session.privateConversationData[userWelcomed_key]) {
-        session.privateConversationData[userWelcomed_key] = true;
-        return session.send('Welcome back %s! Remember the rules: %s', userName, HelpMessage);
-    }
-});
-
-bot.set('persistConversationData', true);
-
-// reset bot dialog
-bot.dialog('reset', function (session) {
-    // reset data
-    delete session.userData[UserNameKey];
-    delete session.conversationData[CityKey];
-    delete session.privateConversationData[CityKey];
-    delete session.privateConversationData[UserWelcomedKey];
-    session.endDialog('Ups... I\'m suffering from a memory loss...');
-}).triggerAction({ matches: /^reset/i });
+]);
 
 // Greet dialog
 bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
@@ -60,3 +63,26 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
 
     builder.Prompts.text(session, 'Before get started, please tell me your name?');
 }));
+
+// Dialog to ask user how they are feeling
+bot.dialog('askForFeeling', [
+    function (session) {
+        builder.Prompts.text(session, "How are you feeling right now?");
+    },
+    function (session, results) {
+        session.endDialogWithResult(results);
+    }
+]);
+
+// Dialog to process the user's feelings and offer suggestions
+bot.dialog('processFeeling', [
+    function (session) {
+        var prompt = "I understand you're feeling " + session.userData[currentFeeling_key] + ". Do you want to listen to music?";
+        builder.Prompts.text(session, prompt);
+    },
+    function (session, results) {
+        session.endDialogWithResult(results);
+    }
+]);
+
+bot.set('persistConversationData', true);
