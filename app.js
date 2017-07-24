@@ -17,7 +17,46 @@ var connector = new builder.ChatConnector({
 // Listen for messages from users
 server.post('/api/messages', connector.listen());
 
+// Local storage
+var username_key = 'UserName';
+var userWelcomed_key = 'UserWelcomed';
+
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send("You said: %s", session.message.text);
+    //session.send("You said: %s", session.message.text);
+
+    // is user's name set?
+    var userName = session.userData[username_key];
+    if (!userName) {
+        return session.beginDialog('greet');
+    }
+
+    // has the user been welcomed to the conversation?
+    if (!session.privateConversationData[userWelcomed_key]) {
+        session.privateConversationData[userWelcomed_key] = true;
+        return session.send('Welcome back %s! Remember the rules: %s', userName, HelpMessage);
+    }
 });
+
+bot.set('persistConversationData', true);
+
+// reset bot dialog
+bot.dialog('reset', function (session) {
+    // reset data
+    delete session.userData[UserNameKey];
+    delete session.conversationData[CityKey];
+    delete session.privateConversationData[CityKey];
+    delete session.privateConversationData[UserWelcomedKey];
+    session.endDialog('Ups... I\'m suffering from a memory loss...');
+}).triggerAction({ matches: /^reset/i });
+
+// Greet dialog
+bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
+    if (results && results.response) {
+        session.userData[username_key] = results.response;
+        session.privateConversationData[userWelcomed_key] = true;
+        return session.endDialog('Welcome %s! %s', results.response, HelpMessage);
+    }
+
+    builder.Prompts.text(session, 'Before get started, please tell me your name?');
+}));
