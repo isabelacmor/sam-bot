@@ -18,11 +18,12 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 // Local storage
-var HelpMessage = '\n * This is the help message';
+var HelpMessage = '\n * Play music\n * Start meditation\n * Text a friend';
 var username_key = 'UserName';
 var userWelcomed_key = 'UserWelcomed';
 var currentFeeling_key = "CurrentFeeling";
 
+var feelingsArray = ['Tired', 'Frustrated', 'Sad', 'Anxious'];
 
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
@@ -37,14 +38,31 @@ var bot = new builder.UniversalBot(connector, [
         // has the user been welcomed to the conversation?
         if (!session.privateConversationData[userWelcomed_key]) {
             session.privateConversationData[userWelcomed_key] = true;
-            session.send('Welcome back %s! Remember the rules: %s', userName, HelpMessage);
+            session.send('Welcome back %s! Remember you can ask me to do the following at any time: %s', userName, HelpMessage);
         }
 
         session.beginDialog('askForFeeling');
     },
     function (session, results) {
-        session.userData[currentFeeling_key] = results.response;
-        session.beginDialog('processFeeling');
+        session.userData[currentFeeling_key] = results.response.entity.toLowerCase();
+        switch (results.response.entity) {
+            case 'Tired':
+                session.beginDialog('processFeeling');
+                break;
+            case 'Frustrated':
+                session.beginDialog('processFeeling');
+                break;
+            case 'Sad':
+                session.beginDialog('processFeeling');
+                break;
+            case 'Anxious':
+                session.beginDialog('processFeeling');
+                break;
+            default:
+                session.send('invalid choice');
+                break;
+        }
+        //session.beginDialog('processFeeling');
     },
     function (session, results) {
         // Process request and do action request by user.
@@ -68,7 +86,8 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
 // Dialog to ask user how they are feeling
 bot.dialog('askForFeeling', [
     function (session) {
-        builder.Prompts.text(session, "How are you feeling right now?");
+        //builder.Prompts.text(session, "How are you feeling right now?");
+        builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
     },
     function (session, results) {
         session.endDialogWithResult(results);
@@ -87,3 +106,19 @@ bot.dialog('processFeeling', [
 ]);
 
 bot.set('persistConversationData', true);
+
+// The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
+bot.dialog('playMusic', function (session, args, next) {
+    session.endDialog("This would start playing music right away.<br/>For now, say 'next' to continue.");
+})
+.triggerAction({
+    matches: /^play music$/i,
+});
+
+// The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
+bot.dialog('startMeditation', function (session, args, next) {
+    session.endDialog("This would start meditation right away.<br/>For now, say 'next' to continue.");
+})
+.triggerAction({
+    matches: /^start meditation$/i,
+});
