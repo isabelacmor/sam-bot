@@ -212,7 +212,7 @@ bot.on("event", function (event) {
     }
     else if (event.name === "webSentiment")
     {
-        msg.text("Sam is feeling sad \u1F622 want to look at some happier sites?");
+        msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
         handledEvent = true;
     }
 
