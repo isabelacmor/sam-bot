@@ -140,8 +140,8 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
 // Dialog to ask user how they are feeling
 bot.dialog('askForFeeling', [
     function (session) {
-        //builder.Prompts.choice(session, msg, feelingsArray);
-        builder.Prompts.choice(session, 'How are you feeling right now?', msg, {listStyle: builder.ListStyle.button});
+        builder.Prompts.choice(session, msg, feelingsArray);
+        //builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
     },
     function (session, results) {
         session.endDialogWithResult(results);
@@ -212,7 +212,7 @@ bot.on("event", function (event) {
     }
     else if (event.name === "webSentiment")
     {
-        msg.text("Sam is feeling sad 🙁.  Want to look at some happier sites?");
+        msg.text("Sam is feeling sad \u1F622 want to look at some happier sites?");
         handledEvent = true;
     }
 
