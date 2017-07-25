@@ -129,7 +129,7 @@ bot.dialog('askForFeeling', [
 // Dialog to process the user's feelings and offer suggestions
 bot.dialog('processFeeling', [
     function (session) {
-        var prompt = "I understand you're feeling " + session.userData[currentFeeling_key] + ". Do you want to listen to music?";
+        var prompt = "I understand you are feeling " + session.userData[currentFeeling_key] + ". Do you want to listen to music?";
         builder.Prompts.text(session, prompt);
     },
     function (session, results) {
