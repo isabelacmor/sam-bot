@@ -34,6 +34,7 @@ var currentFeeling_key = "CurrentFeeling";
 // Feelings definitions
 var feelingsArray = ["Sad", 'Lonely', 'Anxious'];
 var feelingMessage = new builder.Message()
+  .text("How are you feeling?")
   .addAttachment({
       text: '',
       thumbnailUrl: 'https://github.com/isabellacmor/sam-bot/blob/master/images/sad.png?raw=true',
@@ -140,7 +141,6 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
 // Dialog to ask user how they are feeling
 bot.dialog('askForFeeling', [
     function (session) {
-        session.send("How are you feeling right now?");
         builder.Prompts.choice(session, feelingMessage, {listStyle: builder.ListStyle.button});
         //builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
     },
