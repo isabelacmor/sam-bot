@@ -135,7 +135,7 @@ bot.on("event", function (event) {
 
 //Basic root dialog which takes an inputted color and sends a changeBackground event. No NLP, regex, validation here - just grabs input and sends it back as an event.
 bot.dialog('changeBackground', function (session, args, next) {
-  var reply = createEvent("changeBackground", session.message.text, session.message.address);
+  var reply = createEvent("changeBackground", session.message.text.split(" ")[0], session.message.address);
   session.endDialog(reply);
 })
 .triggerAction({
