@@ -23,7 +23,36 @@ var username_key = 'UserName';
 var userWelcomed_key = 'UserWelcomed';
 var currentFeeling_key = "CurrentFeeling";
 
-var feelingsArray = ['Tired', 'Frustrated', 'Sad', 'Anxious'];
+//var feelingsArray = [{'feeling':'Tired', 'img': 'https://cdn4.iconfinder.com/data/icons/smileys-for-fun/128/smiley__16-20.png'}, {'feeling':'Frustrated', 'img': 'https://cdn4.iconfinder.com/data/icons/smileys-for-fun/128/smiley__16-20.png'}, {'feeling':'Sad', 'img': 'https://cdn4.iconfinder.com/data/icons/smileys-for-fun/128/smiley__16-20.png'}, {'feeling':'Anxious', 'img': 'https://cdn4.iconfinder.com/data/icons/smileys-for-fun/128/smiley__16-20.png'}];
+var feelingsArray = ["Tired", 'Sad', 'Frustrated', 'Anxious'];
+
+// Map choices into actions
+var msg = new builder.Message()
+  .addAttachment({
+      text: '',
+      thumbnailUrl: 'http://imgur.com/HrRp7zd.png',
+      actions: [ { title: 'Happy', message: 'Happy' }]
+   })
+  .addAttachment({
+      text: '',
+      thumbnailUrl: 'http://imgur.com/lyF5JK5.png',
+      actions: [ { title: 'Fine', message: 'Fine' }]
+   })
+  .addAttachment({
+      text: '',
+      thumbnailUrl: 'http://imgur.com/caVlZJZ.png',
+      actions: [ { title: 'Okay', message: 'Okay' }]
+  })
+  .addAttachment({
+      text: '',
+      thumbnailUrl: 'http://imgur.com/ijPsb3q.png',
+      actions: [ { title: 'Depressed', message: 'Depressed' }]
+   })
+   .addAttachment({
+       text: '',
+       thumbnailUrl: 'http://i.imgur.com/a4RlGrv.png',
+       actions: [ { title: 'Sad', message: 'Sad' }]
+    });
 
 // This is a dinner reservation bot that uses multiple dialogs to prompt users for input.
 var bot = new builder.UniversalBot(connector, [
@@ -86,8 +115,8 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
 // Dialog to ask user how they are feeling
 bot.dialog('askForFeeling', [
     function (session) {
-        //builder.Prompts.text(session, "How are you feeling right now?");
-        builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
+        builder.Prompts.choice(session, msg, feelingsArray);
+        //builder.Prompts.choice(session, 'How are you feeling right now?', feelingsMessage, {listStyle: builder.ListStyle.button});
     },
     function (session, results) {
         session.endDialogWithResult(results);
