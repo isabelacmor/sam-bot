@@ -68,10 +68,6 @@ var bot = new builder.UniversalBot(connector, [
         // Process request and do action request by user.
         session.send("You were feeling: %s. You chose: %s",
             session.userData[currentFeeling_key], results.response);
-        session.beginDialog('changebg');
-        // session.endDialog();
-    },
-    function (session, results) {
         session.endDialog();
     }
 ]);
@@ -138,12 +134,13 @@ bot.on("event", function (event) {
 })
 
 //Basic root dialog which takes an inputted color and sends a changeBackground event. No NLP, regex, validation here - just grabs input and sends it back as an event.
-bot.dialog('changebg', [
-    function (session) {
-        var reply = createEvent("changeBackground", session.message.text, session.message.address);
-        session.endDialog(reply);
-    }
-]);
+bot.dialog('changeBackground', function (session, args, next) {
+  var reply = createEvent("changeBackground", /*session.message.text*/ "cyan", session.message.address);
+  session.endDialog(reply);
+})
+.triggerAction({
+    matches: /^changebg*$/i,
+});
 
 //Creates a backchannel event
 const createEvent = (eventName, value, address) => {
