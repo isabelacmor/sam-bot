@@ -133,7 +133,9 @@ bot.on("event", function (event) {
     bot.send(msg);
 })
 
-//Basic root dialog which takes an inputted color and sends a changeBackground event. No NLP, regex, validation here - just grabs input and sends it back as an event.
+// Example for communicating from bot to extension
+// session.message.text.split(" ")[1] -> access arguments typed after the triggerAction word
+// "changeBackground" -> event name matches the event name in the extensions code
 bot.dialog('changeBackground', function (session, args, next) {
   var reply = createEvent("changeBackground", session.message.text.split(" ")[1], session.message.address);
   session.endDialog(reply);
@@ -142,7 +144,7 @@ bot.dialog('changeBackground', function (session, args, next) {
     matches: /^changebg\s[a-zA-Z]*$/i,
 });
 
-//Creates a backchannel event
+// Generic method for creating a backchannel event
 const createEvent = (eventName, value, address) => {
     var msg = new builder.Message().address(address);
     msg.data.type = "event";
