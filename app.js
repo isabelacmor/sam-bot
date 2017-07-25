@@ -157,12 +157,23 @@ bot.dialog('startMeditation', function (session, args, next) {
 
 //Bot listening for inbound backchannel events - in this case it only listens for events named "buttonClicked"
 bot.on("event", function (event) {
+    var handledEvent = false;
     var msg = new builder.Message().address(event.address);
     msg.textLocale("en-us");
     if (event.name === "buttonClicked") {
         msg.text("I see that you just pushed that button");
+        handledEvent = true;
     }
-    bot.send(msg);
+    else if (event.name === "webSentiment")
+    {
+        msg.text("Sam is feeling sad... want to look at some happier sites?");
+        handledEvent = true;
+    }
+
+    if (handledEvent)
+    {
+        bot.send(msg);
+    }
 })
 
 // Example for communicating from bot to extension
