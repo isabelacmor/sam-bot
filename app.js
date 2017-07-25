@@ -141,7 +141,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
 // Dialog to ask user how they are feeling
 bot.dialog('askForFeeling', [
     function (session) {
-        builder.Prompts.choice(session, feelingMessage, {listStyle: builder.ListStyle.button});
+        builder.Prompts.choice(session, feelingMessage, feelingsArray, {listStyle: builder.ListStyle.button});
         //builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
     },
     function (session, results) {
