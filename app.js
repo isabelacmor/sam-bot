@@ -36,17 +36,17 @@ var feelingsArray = ["Sad", 'Lonely', 'Anxious'];
 var feelingMessage = new builder.Message()
   .addAttachment({
       text: '',
-      thumbnailUrl: 'http://i.imgur.com/a4RlGrv.png',
+      thumbnailUrl: 'https://github.com/isabellacmor/sam-bot/blob/master/images/sad.png',
       actions: [ { title: 'Sad', message: 'Sad' }]
    })
   .addAttachment({
       text: '',
-      thumbnailUrl: 'http://imgur.com/lyF5JK5.png',
+      thumbnailUrl: 'https://github.com/isabellacmor/sam-bot/blob/master/images/ok.png',
       actions: [ { title: 'Lonely', message: 'Lonely' }]
    })
   .addAttachment({
       text: '',
-      thumbnailUrl: 'http://imgur.com/caVlZJZ.png',
+      thumbnailUrl: 'https://github.com/isabellacmor/sam-bot/blob/master/images/depressed.png',
       actions: [ { title: 'Anxious', message: 'Anxious' }]
   });
 
