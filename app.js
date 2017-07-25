@@ -141,7 +141,9 @@ bot.set('persistConversationData', true);
 
 // The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
 bot.dialog('playMusic', function (session, args, next) {
-    session.endDialog("This would start playing music right away.<br/>For now, say 'next' to continue.");
+    var reply = createEvent("playMusic", "", session.message.address);
+    session.endDialog(reply);
+    //session.endDialog("This would start playing music right away.<br/>For now, say 'next' to continue.");
 })
 .triggerAction({
     matches: /^play music$/i,
@@ -149,7 +151,9 @@ bot.dialog('playMusic', function (session, args, next) {
 
 // The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
 bot.dialog('startMeditation', function (session, args, next) {
-    session.endDialog("This would start meditation right away.<br/>For now, say 'next' to continue.");
+    var reply = createEvent("startMediation", "", session.message.address);
+    session.endDialog(reply);
+    //session.endDialog("This would start meditation right away.<br/>For now, say 'next' to continue.");
 })
 .triggerAction({
     matches: /^start meditation$/i,
@@ -157,12 +161,23 @@ bot.dialog('startMeditation', function (session, args, next) {
 
 //Bot listening for inbound backchannel events - in this case it only listens for events named "buttonClicked"
 bot.on("event", function (event) {
+    var handledEvent = false;
     var msg = new builder.Message().address(event.address);
     msg.textLocale("en-us");
     if (event.name === "buttonClicked") {
         msg.text("I see that you just pushed that button");
+        handledEvent = true;
     }
-    bot.send(msg);
+    else if (event.name === "webSentiment")
+    {
+        msg.text("Sam is feeling sad... want to look at some happier sites?");
+        handledEvent = true;
+    }
+
+    if (handledEvent)
+    {
+        bot.send(msg);
+    }
 })
 
 // Example for communicating from bot to extension
