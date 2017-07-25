@@ -54,10 +54,10 @@ var feelingMessage = new builder.Message()
 // Phrases
 var phrases = {
   validating: [
-    "Of course you're feeling this way. It must be a difficult situation.",
-    "It's okay to feel this way and it means you're human.",
+    "Of course you\'re feeling this way. It must be a difficult situation.",
+    "It\'s okay to feel this way and it means you\'re human.",
     "I can see how difficult this is for you. No one should have to go through that.",
-    "You're not wrong for feeling the way you do and no one blames you for it."
+    "You\'re not wrong for feeling the way you do and no one blames you for it."
   ],
   prompt: [
     "Do you want to talk about it?",
@@ -66,11 +66,11 @@ var phrases = {
     "Would you like to tell me more?"
   ],
   terminating: [
-    "That's okay. I'll be here if you change your mind.",
-    "I know this can be difficult to talk about. If you decide to share more with me, I'll be here.",
-    "I understand. I'll be here for you when you're ready.",
-    "You're not alone in this. I'm here if you need me.",
-    "Take your time. No one is rushing you to feel better. I'll be where when you need me."
+    "That\'s okay. I\'ll be here if you change your mind.",
+    "I know this can be difficult to talk about. If you decide to share more with me, I\'ll be here.",
+    "I understand. I\'ll be here for you when you\'re ready.",
+    "You\'re not alone in this. I\'m here if you need me.",
+    "Take your time. No one is rushing you to feel better. I\'ll be where when you need me."
   ],
   action: [
     "Would you like to watch a cute video to take your mind off things?",
