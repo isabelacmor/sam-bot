@@ -24,7 +24,7 @@ var userWelcomed_key = 'UserWelcomed';
 var currentFeeling_key = "CurrentFeeling";
 
 //var feelingsArray = [{'feeling':'Tired', 'img': 'https://cdn4.iconfinder.com/data/icons/smileys-for-fun/128/smiley__16-20.png'}, {'feeling':'Frustrated', 'img': 'https://cdn4.iconfinder.com/data/icons/smileys-for-fun/128/smiley__16-20.png'}, {'feeling':'Sad', 'img': 'https://cdn4.iconfinder.com/data/icons/smileys-for-fun/128/smiley__16-20.png'}, {'feeling':'Anxious', 'img': 'https://cdn4.iconfinder.com/data/icons/smileys-for-fun/128/smiley__16-20.png'}];
-var feelingsArray = ["Tired", 'Sad', 'Frustrated', 'Anxious'];
+var feelingsArray = ["Happy", 'Fine', 'Okay', 'Depressed', 'Sad'];
 
 // Map choices into actions
 var msg = new builder.Message()
@@ -75,16 +75,19 @@ var bot = new builder.UniversalBot(connector, [
     function (session, results) {
         session.userData[currentFeeling_key] = results.response.entity.toLowerCase();
         switch (results.response.entity) {
-            case 'Tired':
+            case 'Happy':
                 session.beginDialog('processFeeling');
                 break;
-            case 'Frustrated':
+            case 'Fine':
+                session.beginDialog('processFeeling');
+                break;
+            case 'Okay':
+                session.beginDialog('processFeeling');
+                break;
+            case 'Depressed':
                 session.beginDialog('processFeeling');
                 break;
             case 'Sad':
-                session.beginDialog('processFeeling');
-                break;
-            case 'Anxious':
                 session.beginDialog('processFeeling');
                 break;
             default:
