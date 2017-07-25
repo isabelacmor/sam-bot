@@ -68,6 +68,10 @@ var bot = new builder.UniversalBot(connector, [
         // Process request and do action request by user.
         session.send("You were feeling: %s. You chose: %s",
             session.userData[currentFeeling_key], results.response);
+        session.beginDialog('changebg');
+        // session.endDialog();
+    },
+    function (session, results) {
         session.endDialog();
     }
 ]);
