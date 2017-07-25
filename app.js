@@ -139,7 +139,7 @@ bot.dialog('changeBackground', function (session, args, next) {
   session.endDialog(reply);
 })
 .triggerAction({
-    matches: /^changebg*$/i,
+    matches: /^changebg\s[a-zA-Z]*$/i,
 });
 
 //Creates a backchannel event
