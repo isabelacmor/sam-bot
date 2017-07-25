@@ -141,7 +141,9 @@ bot.set('persistConversationData', true);
 
 // The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
 bot.dialog('playMusic', function (session, args, next) {
-    session.endDialog("This would start playing music right away.<br/>For now, say 'next' to continue.");
+    var reply = createEvent("playMusic", "", session.message.address);
+    session.endDialog(reply);
+    //session.endDialog("This would start playing music right away.<br/>For now, say 'next' to continue.");
 })
 .triggerAction({
     matches: /^play music$/i,
@@ -149,7 +151,9 @@ bot.dialog('playMusic', function (session, args, next) {
 
 // The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
 bot.dialog('startMeditation', function (session, args, next) {
-    session.endDialog("This would start meditation right away.<br/>For now, say 'next' to continue.");
+    var reply = createEvent("startMediation", "", session.message.address);
+    session.endDialog(reply);
+    //session.endDialog("This would start meditation right away.<br/>For now, say 'next' to continue.");
 })
 .triggerAction({
     matches: /^start meditation$/i,
