@@ -1,6 +1,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var secret = require('./secret.json');
+var twilio = require('twilio');
 
 /**
  * Returns a random integer between min (inclusive) and max (inclusive)
@@ -9,6 +10,11 @@ var secret = require('./secret.json');
 var getRandomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+// Setup Twilio
+var accountSid = 'AC5c58512b18c1c3f4ee2c0e386bee48f6'; // Your Account SID from www.twilio.com/console
+var authToken = 'dc8840fa46616237c602b5386eea45eb';   // Your Auth Token from www.twilio.com/console
+var client = new twilio(accountSid, authToken);
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -32,6 +38,8 @@ var userWelcomed_key = 'UserWelcomed';
 var currentFeeling_key = "CurrentFeeling";
 var currentActivity_key = "CurrentActivity";
 var address_key = "AddressKey";
+var friend_key = "FriendKey";
+var friendnames_key = "FriendNamesKey";
 var savedAddress;
 
 // Feelings definitions
@@ -118,18 +126,17 @@ var bot = new builder.UniversalBot(connector
 // OOBE dialog
 bot.dialog('OOBE', [
     function (session) {
+      // Welcome message + about Sam
       var card = new builder.AnimationCard(session)
         .title(aboutSam)
         .subtitle(tipSam)
-        //.text(tipSam)
         .image(builder.CardImage.create(session, 'http://i.imgur.com/2k16h0I.png'))
         .media([
             { url: 'http://i.imgur.com/2k16h0I.png' }
         ])
         ;
-        // attach the card to the reply message
+        // Attach the card to the reply message
         var welcomeMessage = new builder.Message(session).addAttachment(card);
-
         session.send(welcomeMessage);
 
         setTimeout(function(){
@@ -141,11 +148,13 @@ bot.dialog('OOBE', [
         session.userData[username_key] = results.response;
         var reply = createEvent("updateName", session.userData[username_key], session.message.address);
         session.send(reply);
+
+        // Ask to add friends
+        session.beginDialog('promptAddFriend');
+    }
+    , function (session, results) {
         session.beginDialog('askForFeeling');
     }
-    //, function (session, results) {
-    //     session.beginDialog('askForFeeling');
-    // }
 ])
 .triggerAction({
     matches: /^test oobe$/i,
@@ -158,6 +167,56 @@ bot.dialog('askForFeeling', [
         //builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
     },
     function (session, results) {
+        session.endDialogWithResult(results);
+    }
+]);
+
+// Dialog to ask the user if they want to add a friend
+bot.dialog('promptAddFriend', [
+    function (session) {
+      // Timeout to make this a little more human-like
+      setTimeout(function(){
+        builder.Prompts.choice(session, "You can ask me to reach out to a friend if you're needing some human attention.  Would you like to add a friend's phone number now?", "yes|no", {listStyle: builder.ListStyle.button});
+      }, 3000);
+    },
+    function (session, results) {
+        switch (results.response.entity) {
+          case 'yes':
+            session.beginDialog('promptAskFriendInfo');
+            break;
+          case 'no':
+            // Continue to prompt for suggested activity
+            session.endDialogWithResult(results);
+            //session.beginDialog('promptActivity');
+            break;
+        }
+    }
+])
+.triggerAction({
+  matches: /^add [a]?[\s]?friend$/i,
+});;
+
+// Dialog to ask the user to talk more about their feelings
+bot.dialog('promptAskFriendInfo', [
+    function (session) {
+        builder.Prompts.text(session, "What's your friend's name?");
+    },
+    function (session, results) {
+        // Save friend's name
+        if (session.userData[friend_key] == null){
+          session.userData[friend_key] = [];
+        }
+        if (session.userData[friendnames_key] == null){
+          session.userData[friendnames_key] = [];
+        }
+        session.userData[friend_key].push({"name": results.response, "phone_number": ""});
+        session.userData[friendnames_key].push(results.response);
+        builder.Prompts.text(session, "What's " + results.response + "'s mobile number?");
+    },
+    function (session, results) {
+        // Save friend's phone number
+        session.userData[friend_key][session.userData[friend_key].length-1].phone_number = results.response;
+        session.send("Great! To ask me to reach out to " + session.userData[friend_key][session.userData[friend_key].length-1].name + ", you can say 'Text a friend' at any time.");
         session.endDialogWithResult(results);
     }
 ]);
@@ -315,8 +374,43 @@ const createEvent = (eventName, value, address) => {
 // Util method to clear data before demo
 bot.dialog('/delete', function (session) {
   session.userData[username_key] = null;
+  session.userData[friend_key] = null;
   session.endDialog('Everything has been wiped out')
 })
 .triggerAction({
   matches: /^delete all$/i,
+});
+
+// Dialog to prompt user which friend to text
+bot.dialog('promptSendText', [
+    function (session) {
+        builder.Prompts.choice(session, "Who would you like me to reach out to?", session.userData[friendnames_key], {listStyle: builder.ListStyle.button});
+        //builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
+    },
+    function (session, results) {
+      // Send text
+      var pn = null;
+      for(var i = 0; i < session.userData[friend_key].length; i++) {
+        if(session.userData[friend_key][i].name == results.response.entity) {
+          pn = session.userData[friend_key][i].phone_number;
+          break;
+        }
+      }
+
+      session.send("Texting " + results.response.entity + " at " + pn);
+      if(pn){
+        var message = "Hey there, it's Sam-Bot! Your friend " + session.userData[username_key] + " could use someone to talk to. Why don't you send them a message when you have some time? 😊";
+
+        client.messages.create({
+            body: message,
+            to: pn,  // Text this number
+            from: '+12062025015' // From a valid Twilio number
+        })
+        .then((message) => console.log(message.sid));
+        session.endDialog("I've reached out to " + results.response.entity + ". They'll reach out to you directly as soon as they can! We care about you 😊");
+      }
+    }
+])
+.triggerAction({
+  matches: /^text [a]?[\s]?friend$/i,
 });

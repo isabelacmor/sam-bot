@@ -10,6 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "botbuilder": "^3.8.4",
-    "restify": "^5.0.1"
+    "restify": "^5.0.1",
+    "sendmail": "^1.1.1",
+    "textbelt": "github:minond/textbelt",
+    "twilio": "^3.5.0"
   }
 }
