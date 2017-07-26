@@ -66,7 +66,7 @@ var feelingMessage = new builder.Message()
 var greeting = "It's great to meet you ";
 var aboutSam = "Hi, I'm Sam!";
 var tipSam = "I'm the buddy in your browser, looking out for you and making sure you're happy as a clam!\n\nIf you're not feeling your best, you can always come here to chat with me.\n\nI'll also keep an eye on your mood throughout the day and let you know if I think you need a little emotional break.";
-var samActions = "You can ask me to 'play music', 'play video', and 'start meditation' at any time if you're not feeling your best.";
+var samActions = "You can ask me to 'play music', 'play video', 'start meditation', or 'text a friend' at any time if you're not feeling your best.\n\nYou can also add more trusted friends by asking me to 'add a friend'.";
 
 var phrases = {
   validating: [
