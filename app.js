@@ -255,9 +255,9 @@ bot.on("event", function (event) {
       msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
       handledEvent = true;
     } else if(event.name === "startState") {
-      msg.text("startState");
+      //msg.text("startState");
       bot.beginDialog(event.address, "OOBE");
-      handledEvent = true;
+      handledEvent = false;
     }
 
     if (handledEvent) {
