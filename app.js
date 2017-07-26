@@ -26,7 +26,7 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 // Local storage
-var HelpMessage = '\n * Play music\n * Start meditation\n * Text a friend';
+var HelpMessage = '\n * Play music\n * Play video\n * Start meditation\n * Text a friend';
 var username_key = 'UserName';
 var userWelcomed_key = 'UserWelcomed';
 var currentFeeling_key = "CurrentFeeling";
@@ -83,47 +83,47 @@ var phrases = {
 };
 
 // Main bot flow
-var bot = new builder.UniversalBot(connector, [
-    // Ask for feeling
+var bot = new builder.UniversalBot(connector);
+//   , [
+//     // Ask for feeling
+//     function (session) {
+//         // is user's name set?
+//         var userName = session.userData[username_key];
+//         if (!userName) {
+//             return session.beginDialog('greet');
+//         }
+//
+//         // has the user been welcomed to the conversation?
+//         if (!session.privateConversationData[userWelcomed_key]) {
+//             session.privateConversationData[userWelcomed_key] = true;
+//             session.send('Welcome back %s! Remember you can ask me to do the following at any time: %s', userName, HelpMessage);
+//         }
+//
+//         session.beginDialog('askForFeeling');
+//     },  // Initial validation + prompt response
+//     function (session, results) {
+//         session.userData[currentFeeling_key] = results.response.entity.toLowerCase();
+//         session.send(phrases.validating[getRandomInt(0, phrases.validating.length-1)]);
+//         session.beginDialog('promptDiscussion');
+//     },
+//     function (session, results) {
+//         // Process request and do action request by user.
+//         session.beginDialog('promptActivity');
+//     }, function (session, results) {
+//       session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
+//       session.endDialog();
+//     }
+// ]);
+
+// OOBE dialog
+bot.dialog('OOBE', [
     function (session) {
-        // is user's name set?
-        var userName = session.userData[username_key];
-        if (!userName) {
-            return session.beginDialog('greet');
-        }
-
-        // has the user been welcomed to the conversation?
-        if (!session.privateConversationData[userWelcomed_key]) {
-            session.privateConversationData[userWelcomed_key] = true;
-            session.send('Welcome back %s! Remember you can ask me to do the following at any time: %s', userName, HelpMessage);
-        }
-
-        session.beginDialog('askForFeeling');
-    },  // Initial validation + prompt response
-    function (session, results) {
-        session.userData[currentFeeling_key] = results.response.entity.toLowerCase();
-        session.send(phrases.validating[getRandomInt(0, phrases.validating.length-1)]);
-        session.beginDialog('promptDiscussion');
+        builder.Prompts.text(session, "What's your name?");
     },
     function (session, results) {
-        // Process request and do action request by user.
-        session.beginDialog('promptActivity');
-    }, function (session, results) {
-      session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
-      session.endDialog();
+        session.beginDialog('askForFeeling');
     }
 ]);
-
-// Greet dialog
-bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
-    if (results && results.response) {
-        session.userData[username_key] = results.response;
-        session.privateConversationData[userWelcomed_key] = true;
-        return session.endDialog('Welcome %s! %s', results.response, HelpMessage);
-    }
-
-    builder.Prompts.text(session, 'Before get started, please tell me your name?');
-}));
 
 // Dialog to ask user how they are feeling
 bot.dialog('askForFeeling', [
@@ -243,6 +243,16 @@ bot.on("event", function (event) {
     {
         msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
         handledEvent = true;
+    } else if(event.name === "startState") {
+      // Logged in
+      if(event.value) {
+        // Start logged in flow
+        bot.beginDialog('askForFeeling');
+      } else {
+        // Start OOBE flow
+        bot.beginDialog('OOBE');
+      }
+      handledEvent = true;
     }
 
     if (handledEvent)
