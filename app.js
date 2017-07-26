@@ -102,7 +102,6 @@ var bot = new builder.UniversalBot(connector
   , [
   function(session) {
     savedAddress = session.message.address;
-    //session.userData[username_key] = null;
     if(session.userData[username_key]) {
       session.beginDialog("askForFeeling");
     } else {
@@ -130,15 +129,16 @@ bot.dialog('OOBE', [
       var card = new builder.AnimationCard(session)
         .title(aboutSam)
         .subtitle(tipSam)
-        .image(builder.CardImage.create(session, 'http://i.imgur.com/2k16h0I.png'))
+        .image(builder.CardImage.create(session, 'https://github.com/isabellacmor/sam-bot/blob/master/images/allbunnies.png?raw=true'))
         .media([
-            { url: 'http://i.imgur.com/2k16h0I.png' }
+            { url: 'https://github.com/isabellacmor/sam-bot/blob/master/images/bunny.gif?raw=true' }
         ])
         ;
         // Attach the card to the reply message
         var welcomeMessage = new builder.Message(session).addAttachment(card);
         session.send(welcomeMessage);
 
+        session.sendTyping();
         setTimeout(function(){
           builder.Prompts.text(session, "What's your name?");
         }, 3000);
@@ -175,6 +175,7 @@ bot.dialog('askForFeeling', [
 bot.dialog('promptAddFriend', [
     function (session) {
       // Timeout to make this a little more human-like
+      session.sendTyping();
       setTimeout(function(){
         builder.Prompts.choice(session, "You can ask me to reach out to a friend if you're needing some human attention.  Would you like to add a friend's phone number now?", "yes|no", {listStyle: builder.ListStyle.button});
       }, 3000);
@@ -226,6 +227,7 @@ bot.dialog('promptAskFriendInfo', [
 bot.dialog('promptDiscussion', [
     function (session) {
       // Timeout to make this a little more human-like
+      session.sendTyping();
       setTimeout(function(){
         var prompt = phrases.prompt[getRandomInt(0, phrases.prompt.length-1)];
         builder.Prompts.choice(session, prompt, "yes|no", {listStyle: builder.ListStyle.button});
@@ -377,7 +379,7 @@ bot.dialog('/delete', function (session) {
   session.userData[username_key] = null;
   session.userData[friend_key] = null;
   session.userData[friendnames_key] = null;
-  session.endDialog('Everything has been wiped out')
+  session.endDialog('User data cleared.')
 })
 .triggerAction({
   matches: /^delete all$/i,
