@@ -139,10 +139,10 @@ bot.dialog('OOBE', [
         builder.Prompts.text(session, "What's your name?");
     },
     function (session, results) {
-        session.userData[username_key] = results.response;
+        // session.userData[username_key] = results.response;
         // var reply = createEvent("updateName", session.userData[username_key], session.message.address);
         // session.send(reply);
-        session.send(greeting + "" + session.userData[username_key]);
+        session.send(results.response);
         session.beginDialog('askForFeeling');
     }
 ]);
