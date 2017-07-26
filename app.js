@@ -55,6 +55,9 @@ var feelingMessage = new builder.Message()
   });
 
 // Phrases
+var aboutSam = "Hi, I'm Sam! I'm the buddy in your browser, looking out for you and making sure you're happy as a clam! If you're not feeling well, you can always come here to chat with me. I'll also keep an eye on your mood throughout the day and let you know if I think you need a little emotional break.";
+var samActions = "You can ask me to 'play music', 'play video', and 'start meditation' at any time if you're not feeling your best.";
+
 var phrases = {
   validating: [
     "Of course you\'re feeling this way. It must be a difficult situation.",
@@ -128,11 +131,14 @@ var bot = new builder.UniversalBot(connector);
 // OOBE dialog
 bot.dialog('OOBE', [
     function (session) {
-        session.send("In OOBE");
+      var oobeMessage = new builder.Message()
+        .text(aboutSam);
+
+        session.send(oobeMessage);
         builder.Prompts.text(session, "What's your name?");
     },
     function (session, results) {
-        session.beginDialog('askForFeeling');
+        // session.beginDialog('askForFeeling');
     }
 ]);
 
@@ -289,18 +295,18 @@ const createEvent = (eventName, value, address) => {
 }
 
 // root dialog
-bot.dialog('/', function (session, args) {
-
-  savedAddress = session.message.address;
-
-  var message = 'Hey there, I\'m going to interrupt our conversation and start a survey in a few seconds.';
-  session.send(message);
-
-  message = 'You can also make me send a message by accessing: ';
-  message += 'http://localhost:' + server.address().port + '/api/CustomWebApi';
-  session.send(message);
-
-  setTimeout(() => {
-    bot.beginDialog(savedAddress, "OOBE");
-  }, 5000);
-});
+// bot.dialog('/', function (session, args) {
+//
+//   savedAddress = session.message.address;
+//
+//   var message = 'Hey there, I\'m going to interrupt our conversation and start a survey in a few seconds.';
+//   session.send(message);
+//
+//   message = 'You can also make me send a message by accessing: ';
+//   message += 'http://localhost:' + server.address().port + '/api/CustomWebApi';
+//   session.send(message);
+//
+//   setTimeout(() => {
+//     bot.beginDialog(savedAddress, "OOBE");
+//   }, 5000);
+// });
