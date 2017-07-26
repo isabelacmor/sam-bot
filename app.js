@@ -55,7 +55,8 @@ var feelingMessage = new builder.Message()
   });
 
 // Phrases
-var aboutSam = "Hi, I'm Sam! I'm the buddy in your browser, looking out for you and making sure you're happy as a clam! If you're not feeling well, you can always come here to chat with me. I'll also keep an eye on your mood throughout the day and let you know if I think you need a little emotional break.";
+var greeting = "It's great to meet you ";
+var aboutSam = "Hi, I'm Sam! I'm the buddy in your browser, looking out for you and making sure you're happy as a clam!\n\nIf you're not feeling your best, you can always come here to chat with me.\n\nI'll also keep an eye on your mood throughout the day and let you know if I think you need a little emotional break.";
 var samActions = "You can ask me to 'play music', 'play video', and 'start meditation' at any time if you're not feeling your best.";
 
 var phrases = {
@@ -138,7 +139,11 @@ bot.dialog('OOBE', [
         builder.Prompts.text(session, "What's your name?");
     },
     function (session, results) {
-        // session.beginDialog('askForFeeling');
+        session.userData[username_key] = results.response;
+        var reply = createEvent("updateName", session.userData[username_key], session.message.address);
+        session.send(reply);
+        session.send(greeting + session.userData[username_key]);
+        session.beginDialog('askForFeeling');
     }
 ]);
 
@@ -245,6 +250,15 @@ bot.dialog('startMeditation', function (session, args, next) {
 })
 .triggerAction({
     matches: /^start meditation$/i,
+});
+
+// The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
+bot.dialog('help', function (session, args, next) {
+    session.endDialog(samActions);
+    //session.endDialog("This would start meditation right away.<br/>For now, say 'next' to continue.");
+})
+.triggerAction({
+    matches: /^help$/i,
 });
 
 //Bot listening for inbound backchannel events
