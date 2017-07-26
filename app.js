@@ -114,36 +114,6 @@ var bot = new builder.UniversalBot(connector
         session.endDialog();
       }
 ]);
-//   , [
-//     // Ask for feeling
-//     function (session) {
-//         // is user's name set?
-//         var userName = session.userData[username_key];
-//         if (!userName) {
-//             return session.beginDialog('greet');
-//         }
-//
-//         // has the user been welcomed to the conversation?
-//         if (!session.privateConversationData[userWelcomed_key]) {
-//             session.privateConversationData[userWelcomed_key] = true;
-//             session.send('Welcome back %s! Remember you can ask me to do the following at any time: %s', userName, HelpMessage);
-//         }
-//
-//         session.beginDialog('askForFeeling');
-//     },  // Initial validation + prompt response
-//     function (session, results) {
-//         session.userData[currentFeeling_key] = results.response.entity.toLowerCase();
-//         session.send(phrases.validating[getRandomInt(0, phrases.validating.length-1)]);
-//         session.beginDialog('promptDiscussion');
-//     },
-//     function (session, results) {
-//         // Process request and do action request by user.
-//         session.beginDialog('promptActivity');
-//     }, function (session, results) {
-//       session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
-//       session.endDialog();
-//     }
-// ]);
 
 // OOBE dialog
 bot.dialog('OOBE', [
@@ -342,6 +312,7 @@ const createEvent = (eventName, value, address) => {
     return msg;
 }
 
+// Util method to clear data before demo
 bot.dialog('/delete', function (session) {
   session.userData[username_key] = null;
   session.endDialog('Everything has been wiped out')
