@@ -30,6 +30,7 @@ var HelpMessage = '\n * Play music\n * Start meditation\n * Text a friend';
 var username_key = 'UserName';
 var userWelcomed_key = 'UserWelcomed';
 var currentFeeling_key = "CurrentFeeling";
+var currentActivity_key = "CurrentActivity";
 
 // Feelings definitions
 var feelingsArray = ["Sad", 'Lonely', 'Anxious'];
@@ -136,8 +137,11 @@ bot.dialog('askForFeeling', [
 // Dialog to ask the user if they want to talk about their feeling
 bot.dialog('promptDiscussion', [
     function (session) {
+      // Timeout to make this a little more human-like
+      setTimeout(function(){
         var prompt = phrases.prompt[getRandomInt(0, phrases.prompt.length-1)];
         builder.Prompts.choice(session, prompt, "yes|no", {listStyle: builder.ListStyle.button});
+      }, 3000);
     },
     function (session, results) {
         switch (results.response.entity) {
@@ -147,19 +151,38 @@ bot.dialog('promptDiscussion', [
           case 'no':
             // Continue to prompt for suggested activity
             session.endDialogWithResult(results);
+            //session.beginDialog('promptActivity');
             break;
         }
     }
 ]);
 
 // Dialog to ask user how they are feeling
-bot.dialog('promoteActivity', [
+bot.dialog('promptActivity', [
     function (session) {
-        builder.Prompts.choice(session, feelingMessage, feelingsArray, {listStyle: builder.ListStyle.button});
-        //builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
+        var chosenActivity = getRandomInt(0, phrases.action.length-1);
+        session.userData[currentActivity_key] = chosenActivity;
+        // First 3 prompts require a response.
+        if(chosenActivity < 3) {
+          builder.Prompts.choice(session, phrases.action[chosenActivity], "yes|no", {listStyle: builder.ListStyle.button});
+        } else {
+          session.send(phrases.action[chosenActivity]);
+        }
     },
     function (session, results) {
+      if(results.response.entity === 'yes') {
+          // Video
+          if(session.userData[currentActivity_key] == 0) {
+            session.beginDialog('playVideo');
+          } else if(session.userData[currentActivity_key] == 1) {
+            session.beginDialog('playMusic');
+          } else if(session.userData[currentActivity_key] == 2) {
+            session.beginDialog('startMeditation');
+          }
+      } else {
+        session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
         session.endDialogWithResult(results);
+      }
     }
 ]);
 
@@ -184,6 +207,16 @@ bot.dialog('playMusic', function (session, args, next) {
 })
 .triggerAction({
     matches: /^play music$/i,
+});
+
+// The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
+bot.dialog('playVideo', function (session, args, next) {
+    // var reply = createEvent("playVideo", "", session.message.address);
+    // session.endDialog(reply);
+    session.endDialog("This would start playing a video right away.<br/>For now, say 'next' to continue.");
+})
+.triggerAction({
+    matches: /^play video$/i,
 });
 
 // The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
