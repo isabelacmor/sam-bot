@@ -213,9 +213,8 @@ bot.dialog('playMusic', function (session, args, next) {
 
 // The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
 bot.dialog('playVideo', function (session, args, next) {
-    // var reply = createEvent("playVideo", "", session.message.address);
-    // session.endDialog(reply);
-    session.endDialog("This would start playing a video right away.<br/>For now, say 'next' to continue.");
+    var reply = createEvent("playVideo", "", session.message.address);
+    session.endDialog(reply);
 })
 .triggerAction({
     matches: /^play video$/i,
