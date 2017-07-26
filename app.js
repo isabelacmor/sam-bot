@@ -140,8 +140,8 @@ bot.dialog('OOBE', [
     },
     function (session, results) {
         session.userData[username_key] = results.response;
-        var reply = createEvent("updateName", session.userData[username_key], session.message.address);
-        session.send(reply);
+        // var reply = createEvent("updateName", session.userData[username_key], session.message.address);
+        // session.send(reply);
         session.send(greeting + session.userData[username_key]);
         session.beginDialog('askForFeeling');
     }
