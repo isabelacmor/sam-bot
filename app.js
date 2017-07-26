@@ -32,6 +32,7 @@ var userWelcomed_key = 'UserWelcomed';
 var currentFeeling_key = "CurrentFeeling";
 var currentActivity_key = "CurrentActivity";
 var address_key = "AddressKey";
+var savedAddress;
 
 // Feelings definitions
 var feelingsArray = ["Sad", 'Lonely', 'Anxious'];
@@ -84,14 +85,15 @@ var phrases = {
 };
 
 // Main bot flow
-var bot = new builder.UniversalBot(connector, [
-  function(session) {
-    var savedAddress = session.message.address;
-    session.userData[address_key] = savedAddress;
-    session.send("Saved your address!");
-    session.endDialog();
-  }
-]);
+var bot = new builder.UniversalBot(connector);
+//   , [
+//   function(session) {
+//     var savedAddress = session.message.address;
+//     session.userData[address_key] = savedAddress;
+//     session.send("Saved your address!");
+//     session.endDialog();
+//   }
+// ]);
 //   , [
 //     // Ask for feeling
 //     function (session) {
@@ -287,3 +289,20 @@ const createEvent = (eventName, value, address) => {
     msg.data.value = value;
     return msg;
 }
+
+// root dialog
+bot.dialog('/', function (session, args) {
+
+  savedAddress = session.message.address;
+
+  var message = 'Hey there, I\'m going to interrupt our conversation and start a survey in a few seconds.';
+  session.send(message);
+
+  message = 'You can also make me send a message by accessing: ';
+  message += 'http://localhost:' + server.address().port + '/api/CustomWebApi';
+  session.send(message);
+
+  setTimeout(() => {
+    bot.beginDialog(address, "OOBE");
+  }, 5000);
+});
