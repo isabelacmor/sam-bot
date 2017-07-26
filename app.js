@@ -33,7 +33,7 @@ var currentFeeling_key = "CurrentFeeling";
 var currentActivity_key = "CurrentActivity";
 var address_key = "AddressKey";
 var savedAddress;
-var firstConnection = true;
+session.userData[username_key] = null;
 
 // Feelings definitions
 var feelingsArray = ["Sad", 'Lonely', 'Anxious'];
@@ -95,7 +95,7 @@ var bot = new builder.UniversalBot(connector
   , [
   function(session) {
     savedAddress = session.message.address;
-    // session.userData[username_key] = null;
+    //session.userData[username_key] = null;
     if(session.userData[username_key]) {
       session.beginDialog("askForFeeling");
     } else {
