@@ -118,6 +118,7 @@ var bot = new builder.UniversalBot(connector);
 // OOBE dialog
 bot.dialog('OOBE', [
     function (session) {
+        session.send("In OOBE");
         builder.Prompts.text(session, "What's your name?");
     },
     function (session, results) {
@@ -244,7 +245,7 @@ bot.on("event", function (event) {
         msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
         handledEvent = true;
     } else if(event.name === "startState") {
-      console.log("startState: " + event.value);
+      msg.text("Signed in? " + event.value);
       // Logged in
       if(event.value) {
         // Start logged in flow
