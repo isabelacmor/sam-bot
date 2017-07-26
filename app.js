@@ -60,8 +60,8 @@ var phrases = {
     "You\'re not wrong for feeling the way you do and no one blames you for it."
   ],
   prompt: [
-    "Do you want to talk about it?",
-    "Would you like to talk about it?",
+    "Do you want to talk about it more?",
+    "Would you like to talk about it more?",
     "Do you want to tell me more about what you're feeling?",
     "Would you like to tell me more?"
   ],
@@ -103,26 +103,10 @@ var bot = new builder.UniversalBot(connector, [
         session.userData[currentFeeling_key] = results.response.entity.toLowerCase();
         session.send(phrases.validating[getRandomInt(0, phrases.validating.length-1)]);
         session.beginDialog('promptDiscussion');
-        // switch (results.response.entity) {
-        //     case 'Sad':
-        //         session.beginDialog('processFeeling');
-        //         break;
-        //     case 'Lonely':
-        //         session.beginDialog('processFeeling');
-        //         break;
-        //     case 'Anxious':
-        //         session.beginDialog('processFeeling');
-        //         break;
-        //     default:
-        //         session.send('invalid choice');
-        //         break;
-        //}
-        //session.beginDialog('processFeeling');
     },
     function (session, results) {
         // Process request and do action request by user.
-        session.send("You were feeling: %s. You chose: %s",
-            session.userData[currentFeeling_key], results.response);
+        session.beginDialog('promptActivity');
         session.endDialog();
     }
 ]);
@@ -156,16 +140,26 @@ bot.dialog('promptDiscussion', [
         builder.Prompts.choice(session, prompt, "yes|no", {listStyle: builder.ListStyle.button});
     },
     function (session, results) {
-        session.send(results.response.entity);
         switch (results.response.entity) {
           case 'yes':
             session.beginDialog('doDiscussion');
             break;
           case 'no':
-            // Continue to prompt for suggestion
+            // Continue to prompt for suggested activity
             session.endDialogWithResult(results);
             break;
         }
+    }
+]);
+
+// Dialog to ask user how they are feeling
+bot.dialog('promoteActivity', [
+    function (session) {
+        builder.Prompts.choice(session, feelingMessage, feelingsArray, {listStyle: builder.ListStyle.button});
+        //builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
+    },
+    function (session, results) {
+        session.endDialogWithResult(results);
     }
 ]);
 
