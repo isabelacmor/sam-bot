@@ -33,6 +33,7 @@ var currentFeeling_key = "CurrentFeeling";
 var currentActivity_key = "CurrentActivity";
 var address_key = "AddressKey";
 var savedAddress;
+var firstConnection = true;
 
 // Feelings definitions
 var feelingsArray = ["Sad", 'Lonely', 'Anxious'];
@@ -89,15 +90,20 @@ var phrases = {
 };
 
 // Main bot flow
-var bot = new builder.UniversalBot(connector);
-//   , [
-//   function(session) {
-//     session.beginDialog('/');
-//   },
-//   function(session, results) {
-//     session.endDialog("Got your info");
-//   }
-// ]);
+var bot = new builder.UniversalBot(connector
+  , [
+  function(session) {
+    savedAddress = session.message.address;
+    if(session.userData[username_key]) {
+      session.beginDialog("askForFeeling");
+    } else {
+      session.beginDialog("OOBE");
+    }
+  },
+  function(session, results) {
+    session.endDialog("Got your info");
+  }
+]);
 //   , [
 //     // Ask for feeling
 //     function (session) {
@@ -139,6 +145,7 @@ bot.dialog('OOBE', [
     },
     function (session, results) {
         session.send(results.response);
+        session.userData[username_key] = results.response;
         session.beginDialog('askForFeeling');
     }
 ])
@@ -260,6 +267,18 @@ bot.dialog('help', function (session, args, next) {
     matches: /^help$/i,
 });
 
+//Bot listening for conversationUpdate
+bot.on("conversationUpdate", function (activity) {
+    if(firstConnection) {
+      savedAddress = activity.address;
+      handledEvent = true;
+      var msg = new builder.Message().address(savedAddress).text("got address");
+      bot.send(msg);
+      bot.beginDialog(savedAddress, "OOBE");
+      firstConnection = false;
+    }
+})
+
 //Bot listening for inbound backchannel events
 bot.on("event", function (event) {
     var handledEvent = false;
@@ -275,9 +294,9 @@ bot.on("event", function (event) {
       handledEvent = true;
     } else if(event.name === "startState") {
       if(event.value) {
-        bot.beginDialog(event.address, "askForFeeling");
+        bot.beginDialog(savedAddress, "askForFeeling");
       } else {
-        bot.beginDialog(event.address, "OOBE");
+        bot.beginDialog(savedAddress, "OOBE");
       }
       handledEvent = false;
     }
@@ -285,7 +304,7 @@ bot.on("event", function (event) {
     if (handledEvent) {
         bot.send(msg);
     }
-})
+});
 
 // Example for communicating from bot to extension
 // session.message.text.split(" ")[1] -> access arguments typed after the triggerAction word
@@ -308,6 +327,6 @@ const createEvent = (eventName, value, address) => {
 }
 
 // root dialog
-bot.dialog('/', function (session, args) {
-  session.endDialogWithResult("root");
-});
+// bot.dialog('/', function (session, args) {
+//   session.send("root");
+// });
