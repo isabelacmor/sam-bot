@@ -308,18 +308,6 @@ const createEvent = (eventName, value, address) => {
 }
 
 // root dialog
-// bot.dialog('/', function (session, args) {
-//
-//   savedAddress = session.message.address;
-//
-//   var message = 'Hey there, I\'m going to interrupt our conversation and start a survey in a few seconds.';
-//   session.send(message);
-//
-//   message = 'You can also make me send a message by accessing: ';
-//   message += 'http://localhost:' + server.address().port + '/api/CustomWebApi';
-//   session.send(message);
-//
-//   setTimeout(() => {
-//     bot.beginDialog(savedAddress, "OOBE");
-//   }, 5000);
-// });
+bot.dialog('/', function (session, args) {
+  session.endDialogWithResult("root");
+});
