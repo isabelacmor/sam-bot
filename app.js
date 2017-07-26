@@ -33,7 +33,6 @@ var currentFeeling_key = "CurrentFeeling";
 var currentActivity_key = "CurrentActivity";
 var address_key = "AddressKey";
 var savedAddress;
-session.userData[username_key] = null;
 
 // Feelings definitions
 var feelingsArray = ["Sad", 'Lonely', 'Anxious'];
@@ -344,3 +343,11 @@ const createEvent = (eventName, value, address) => {
     msg.data.value = value;
     return msg;
 }
+
+bot.dialog('/delete', function (session) {
+  session.userData[username_key] = null;
+  session.endDialog('Everything has been wiped out')
+})
+.triggerAction({
+  matches: /^delete all$/i,
+});
