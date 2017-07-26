@@ -244,6 +244,7 @@ bot.on("event", function (event) {
         msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
         handledEvent = true;
     } else if(event.name === "startState") {
+      console.log("startState: " + event.value);
       // Logged in
       if(event.value) {
         // Start logged in flow
