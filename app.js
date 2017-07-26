@@ -132,20 +132,19 @@ var bot = new builder.UniversalBot(connector);
 // OOBE dialog
 bot.dialog('OOBE', [
     function (session) {
-      var oobeMessage = new builder.Message()
+      var welcomeMessage = new builder.Message()
         .text(aboutSam);
-
-        session.send(oobeMessage);
+        session.send(welcomeMessage);
         builder.Prompts.text(session, "What's your name?");
     },
     function (session, results) {
-        // session.userData[username_key] = results.response;
-        // var reply = createEvent("updateName", session.userData[username_key], session.message.address);
-        // session.send(reply);
         session.send(results.response);
         session.beginDialog('askForFeeling');
     }
-]);
+])
+.triggerAction({
+    matches: /^test oobe$/i,
+});
 
 // Dialog to ask user how they are feeling
 bot.dialog('askForFeeling', [
