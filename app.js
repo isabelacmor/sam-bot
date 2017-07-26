@@ -31,6 +31,7 @@ var username_key = 'UserName';
 var userWelcomed_key = 'UserWelcomed';
 var currentFeeling_key = "CurrentFeeling";
 var currentActivity_key = "CurrentActivity";
+var address_key = "AddressKey";
 
 // Feelings definitions
 var feelingsArray = ["Sad", 'Lonely', 'Anxious'];
@@ -83,7 +84,14 @@ var phrases = {
 };
 
 // Main bot flow
-var bot = new builder.UniversalBot(connector);
+var bot = new builder.UniversalBot(connector, [
+  function(session) {
+    var savedAddress = session.message.address;
+    session.userData[address_key] = savedAddress;
+    session.send("Saved your address!");
+    session.endDialog();
+  }
+]);
 //   , [
 //     // Ask for feeling
 //     function (session) {
@@ -231,7 +239,7 @@ bot.dialog('startMeditation', function (session, args, next) {
     matches: /^start meditation$/i,
 });
 
-//Bot listening for inbound backchannel events - in this case it only listens for events named "buttonClicked"
+//Bot listening for inbound backchannel events
 bot.on("event", function (event) {
     var handledEvent = false;
     var msg = new builder.Message().address(event.address);
@@ -254,9 +262,9 @@ bot.on("event", function (event) {
     }
 
     if(session.userData[username_key]) {
-      bot.beginDialog(event.address, 'askForFeeling');
+      bot.beginDialog(session.userData[address_key], 'askForFeeling');
     } else {
-      bot.beginDialog(event.address, 'OOBE');
+      bot.beginDialog(session.userData[address_key], 'OOBE');
     }
 })
 
