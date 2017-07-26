@@ -245,13 +245,15 @@ bot.on("event", function (event) {
         msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
         handledEvent = true;
     } else if(event.name === "startState") {
-      msg.text("Signed in? " + event.value);
       // Logged in
       if(event.value) {
+        // Store username and
         // Start logged in flow
+        msg.text("Welcome " + event.value);
         bot.beginDialog('askForFeeling');
       } else {
         // Start OOBE flow
+        msg.text("Signed in? " + event.value);
         bot.beginDialog('OOBE');
       }
       handledEvent = true;
