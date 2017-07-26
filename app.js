@@ -148,7 +148,7 @@ var bot = new builder.UniversalBot(connector
 // OOBE dialog
 bot.dialog('OOBE', [
     function (session) {
-      var card = new builder.HeroCard(session)
+      var card = new builder.ThumbnailCard(session)
         .title(aboutSam)
         //.subtitle('Your bots — wherever your users are talking')
         .text(tipSam)
