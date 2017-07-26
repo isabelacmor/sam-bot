@@ -57,7 +57,8 @@ var feelingMessage = new builder.Message()
 
 // Phrases
 var greeting = "It's great to meet you ";
-var aboutSam = "Hi, I'm Sam! I'm the buddy in your browser, looking out for you and making sure you're happy as a clam!\n\nIf you're not feeling your best, you can always come here to chat with me.\n\nI'll also keep an eye on your mood throughout the day and let you know if I think you need a little emotional break.";
+var aboutSam = "Hi, I'm Sam! I'm the buddy in your browser, looking out for you and making sure you're happy as a clam!";
+var tipSam = "If you're not feeling your best, you can always come here to chat with me.\n\nI'll also keep an eye on your mood throughout the day and let you know if I think you need a little emotional break.";
 var samActions = "You can ask me to 'play music', 'play video', and 'start meditation' at any time if you're not feeling your best.";
 
 var phrases = {
@@ -94,15 +95,25 @@ var bot = new builder.UniversalBot(connector
   , [
   function(session) {
     savedAddress = session.message.address;
+    // session.userData[username_key] = null;
     if(session.userData[username_key]) {
       session.beginDialog("askForFeeling");
     } else {
       session.beginDialog("OOBE");
     }
-  },
-  function(session, results) {
-    session.endDialog("Got your info");
-  }
+  },  // Initial validation + prompt response
+      function (session, results) {
+          session.userData[currentFeeling_key] = results.response.entity.toLowerCase();
+          session.send(phrases.validating[getRandomInt(0, phrases.validating.length-1)]);
+          session.beginDialog('promptDiscussion');
+      },
+      function (session, results) {
+          // Process request and do action request by user.
+          session.beginDialog('promptActivity');
+      }, function (session, results) {
+        session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
+        session.endDialog();
+      }
 ]);
 //   , [
 //     // Ask for feeling
@@ -138,16 +149,36 @@ var bot = new builder.UniversalBot(connector
 // OOBE dialog
 bot.dialog('OOBE', [
     function (session) {
-      var welcomeMessage = new builder.Message()
-        .text(aboutSam);
+      var card = new builder.HeroCard(session)
+        .title(aboutSam)
+        //.subtitle('Your bots — wherever your users are talking')
+        .text(tipSam)
+        .images([
+            builder.CardImage.create(session, 'http://i.imgur.com/2k16h0I.png')
+        ])
+        // .buttons([
+        //     builder.CardAction.openUrl(session, 'https://docs.microsoft.com/bot-framework/', 'Get Started')
+        // ])
+        ;
+        // attach the card to the reply message
+        var welcomeMessage = new builder.Message(session).addAttachment(card);
+
         session.send(welcomeMessage);
-        builder.Prompts.text(session, "What's your name?");
+
+        setTimeout(function(){
+          builder.Prompts.text(session, "What's your name?");
+        }, 3000);
     },
     function (session, results) {
-        session.send(results.response);
+        session.send("Nice to meet you, %s!", results.response);
         session.userData[username_key] = results.response;
+        var reply = createEvent("updateName", session.userData[username_key], session.message.address);
+        session.send(reply);
         session.beginDialog('askForFeeling');
     }
+    //, function (session, results) {
+    //     session.beginDialog('askForFeeling');
+    // }
 ])
 .triggerAction({
     matches: /^test oobe$/i,
@@ -267,18 +298,6 @@ bot.dialog('help', function (session, args, next) {
     matches: /^help$/i,
 });
 
-//Bot listening for conversationUpdate
-bot.on("conversationUpdate", function (activity) {
-    if(firstConnection) {
-      savedAddress = activity.address;
-      handledEvent = true;
-      var msg = new builder.Message().address(savedAddress).text("got address");
-      bot.send(msg);
-      bot.beginDialog(savedAddress, "OOBE");
-      firstConnection = false;
-    }
-})
-
 //Bot listening for inbound backchannel events
 bot.on("event", function (event) {
     var handledEvent = false;
@@ -294,9 +313,9 @@ bot.on("event", function (event) {
       handledEvent = true;
     } else if(event.name === "startState") {
       if(event.value) {
-        bot.beginDialog(savedAddress, "askForFeeling");
+        bot.beginDialog("askForFeeling");
       } else {
-        bot.beginDialog(savedAddress, "OOBE");
+        bot.beginDialog("OOBE");
       }
       handledEvent = false;
     }
@@ -325,8 +344,3 @@ const createEvent = (eventName, value, address) => {
     msg.data.value = value;
     return msg;
 }
-
-// root dialog
-// bot.dialog('/', function (session, args) {
-//   session.send("root");
-// });
