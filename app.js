@@ -240,8 +240,7 @@ bot.on("event", function (event) {
         msg.text("I see that you just pushed that button");
         handledEvent = true;
     }
-    else if (event.name === "webSentiment")
-    {
+    else if (event.name === "webSentiment") {
         msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
         handledEvent = true;
     } else if(event.name === "startState") {
@@ -255,9 +254,9 @@ bot.on("event", function (event) {
     }
 
     if(session.userData[username_key]) {
-      bot.beginDialog('askForFeeling');
+      bot.beginDialog(message.address, 'askForFeeling');
     } else {
-      bot.beginDialog('OOBE');
+      bot.beginDialog(message.address, 'OOBE');
     }
 })
 
