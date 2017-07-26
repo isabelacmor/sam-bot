@@ -148,16 +148,14 @@ var bot = new builder.UniversalBot(connector
 // OOBE dialog
 bot.dialog('OOBE', [
     function (session) {
-      var card = new builder.ThumbnailCard(session)
+      var card = new builder.AnimationCard(session)
         .title(aboutSam)
-        //.subtitle('Your bots — wherever your users are talking')
-        .text(tipSam)
-        .images([
-            builder.CardImage.create(session, 'http://i.imgur.com/2k16h0I.png')
+        .subtitle(tipSam)
+        //.text(tipSam)
+        .image(builder.CardImage.create(session, 'http://i.imgur.com/2k16h0I.png'))
+        .media([
+            { url: 'http://i.imgur.com/2k16h0I.png' }
         ])
-        // .buttons([
-        //     builder.CardAction.openUrl(session, 'https://docs.microsoft.com/bot-framework/', 'Get Started')
-        // ])
         ;
         // attach the card to the reply message
         var welcomeMessage = new builder.Message(session).addAttachment(card);
