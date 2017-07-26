@@ -245,23 +245,19 @@ bot.on("event", function (event) {
         msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
         handledEvent = true;
     } else if(event.name === "startState") {
-      // Logged in
-      if(event.value) {
-        // Store username and
-        // Start logged in flow
-        msg.text("Welcome " + event.value);
-        bot.beginDialog('askForFeeling');
-      } else {
-        // Start OOBE flow
-        msg.text("Signed in? " + event.value);
-        bot.beginDialog('OOBE');
-      }
+      session.userData[username_key] = event.value;
       handledEvent = true;
     }
 
     if (handledEvent)
     {
         bot.send(msg);
+    }
+
+    if(session.userData[username_key]) {
+      bot.beginDialog('askForFeeling');
+    } else {
+      bot.beginDialog('OOBE');
     }
 })
 
