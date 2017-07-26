@@ -191,10 +191,7 @@ bot.dialog('promptAddFriend', [
             break;
         }
     }
-])
-.triggerAction({
-  matches: /^add [a]?[\s]?friend$/i,
-});;
+]);
 
 // Dialog to ask the user to talk more about their feelings
 bot.dialog('promptAskFriendInfo', [
@@ -215,11 +212,15 @@ bot.dialog('promptAskFriendInfo', [
     },
     function (session, results) {
         // Save friend's phone number
-        session.userData[friend_key][session.userData[friend_key].length-1].phone_number = results.response;
+        var num = results.response.replace(/[^0-9]/g, "");
+        session.userData[friend_key][session.userData[friend_key].length-1].phone_number = num;
         session.send("Great! To ask me to reach out to " + session.userData[friend_key][session.userData[friend_key].length-1].name + ", you can say 'Text a friend' at any time.");
         session.endDialogWithResult(results);
     }
-]);
+])
+.triggerAction({
+  matches: /^add [a]?[\s]?friend$/i,
+});;;
 
 // Dialog to ask the user if they want to talk about their feeling
 bot.dialog('promptDiscussion', [
@@ -397,7 +398,6 @@ bot.dialog('promptSendText', [
         }
       }
 
-      session.send("Texting " + results.response.entity + " at " + pn);
       if(pn){
         var message = "Hey there, it's Sam-Bot! Your friend " + session.userData[username_key] + " could use someone to talk to. Why don't you send them a message when you have some time? 😊";
 
