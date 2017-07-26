@@ -108,7 +108,9 @@ var bot = new builder.UniversalBot(connector, [
     function (session, results) {
         // Process request and do action request by user.
         session.beginDialog('promptActivity');
-        session.endDialog();
+    }, function (session, results) {
+      session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
+      session.endDialog();
     }
 ]);
 
@@ -180,7 +182,7 @@ bot.dialog('promptActivity', [
             session.beginDialog('startMeditation');
           }
       } else {
-        session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
+        //session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
         session.endDialogWithResult(results);
       }
     }
