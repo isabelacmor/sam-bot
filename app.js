@@ -168,7 +168,7 @@ bot.dialog('promptActivity', [
         if(chosenActivity < 3) {
           builder.Prompts.choice(session, phrases.action[chosenActivity], "yes|no", {listStyle: builder.ListStyle.button});
         } else {
-          session.send(phrases.action[chosenActivity]);
+          session.endDialog(phrases.action[chosenActivity]);
         }
     },
     function (session, results) {
