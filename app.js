@@ -254,9 +254,9 @@ bot.on("event", function (event) {
     }
 
     if(session.userData[username_key]) {
-      bot.beginDialog(message.address, 'askForFeeling');
+      bot.beginDialog(event.address, 'askForFeeling');
     } else {
-      bot.beginDialog(message.address, 'OOBE');
+      bot.beginDialog(event.address, 'OOBE');
     }
 })
 
