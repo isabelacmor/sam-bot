@@ -376,6 +376,7 @@ const createEvent = (eventName, value, address) => {
 bot.dialog('/delete', function (session) {
   session.userData[username_key] = null;
   session.userData[friend_key] = null;
+  session.userData[friendnames_key] = null;
   session.endDialog('Everything has been wiped out')
 })
 .triggerAction({
@@ -385,8 +386,12 @@ bot.dialog('/delete', function (session) {
 // Dialog to prompt user which friend to text
 bot.dialog('promptSendText', [
     function (session) {
+      if(session.userData[friendnames_key] && session.userData[friendnames_key].length > 0) {
         builder.Prompts.choice(session, "Who would you like me to reach out to?", session.userData[friendnames_key], {listStyle: builder.ListStyle.button});
-        //builder.Prompts.choice(session, 'How are you feeling right now?', feelingsArray, {listStyle: builder.ListStyle.button});
+      } else {
+        session.send("You don't have any friends added.");
+        session.beginDialog("promptAddFriend");
+      }
     },
     function (session, results) {
       // Send text
