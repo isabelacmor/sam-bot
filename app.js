@@ -88,10 +88,10 @@ var phrases = {
 var bot = new builder.UniversalBot(connector);
 //   , [
 //   function(session) {
-//     var savedAddress = session.message.address;
-//     session.userData[address_key] = savedAddress;
-//     session.send("Saved your address!");
-//     session.endDialog();
+//     session.beginDialog('/');
+//   },
+//   function(session, results) {
+//     session.endDialog("Got your info");
 //   }
 // ]);
 //   , [
@@ -244,29 +244,24 @@ bot.dialog('startMeditation', function (session, args, next) {
 //Bot listening for inbound backchannel events
 bot.on("event", function (event) {
     var handledEvent = false;
+    savedAddress = event.address;
     var msg = new builder.Message().address(event.address);
     msg.textLocale("en-us");
     if (event.name === "buttonClicked") {
-        msg.text("I see that you just pushed that button");
-        handledEvent = true;
+      msg.text("I see that you just pushed that button");
+      handledEvent = true;
     }
     else if (event.name === "webSentiment") {
-        msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
-        handledEvent = true;
+      msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
+      handledEvent = true;
     } else if(event.name === "startState") {
-      session.userData[username_key] = event.value;
+      msg.text("startState");
+      bot.beginDialog(event.address, "OOBE");
       handledEvent = true;
     }
 
-    if (handledEvent)
-    {
+    if (handledEvent) {
         bot.send(msg);
-    }
-
-    if(session.userData[username_key]) {
-      bot.beginDialog(session.userData[address_key], 'askForFeeling');
-    } else {
-      bot.beginDialog(session.userData[address_key], 'OOBE');
     }
 })
 
@@ -303,6 +298,6 @@ bot.dialog('/', function (session, args) {
   session.send(message);
 
   setTimeout(() => {
-    bot.beginDialog(address, "OOBE");
+    bot.beginDialog(savedAddress, "OOBE");
   }, 5000);
 });
