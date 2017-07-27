@@ -126,13 +126,24 @@ var bot = new builder.UniversalBot(connector
 bot.dialog('OOBE', [
     function (session) {
       // Welcome message + about Sam
-      var card = new builder.AnimationCard(session)
+      // var card = new builder.AnimationCard(session)
+      //   .title(aboutSam)
+      //   .subtitle(tipSam)
+      //   .image(builder.CardImage.create(session, 'https://github.com/isabellacmor/sam-bot/blob/master/images/allbunnies.png?raw=true'))
+      //   .media([
+      //       { url: 'https://github.com/isabellacmor/sam-bot/blob/master/images/bunny.gif?raw=true' }
+      //   ])
+      //   ;
+      var card = new builder.ThumbnailCard(session)
         .title(aboutSam)
         .subtitle(tipSam)
-        .image(builder.CardImage.create(session, 'https://github.com/isabellacmor/sam-bot/blob/master/images/allbunnies.png?raw=true'))
-        .media([
-            { url: 'https://github.com/isabellacmor/sam-bot/blob/master/images/bunny.gif?raw=true' }
+        //.text('Build and connect intelligent bots to interact with your users naturally wherever they are, from text/sms to Skype, Slack, Office 365 mail and other popular services.')
+        .images([
+            builder.CardImage.create(session, 'https://github.com/isabellacmor/sam-bot/blob/master/images/allbunnies.png?raw=true')
         ])
+        // .buttons([
+        //     builder.CardAction.openUrl(session, 'https://docs.microsoft.com/bot-framework/', 'Get Started')
+        // ])
         ;
         // Attach the card to the reply message
         var welcomeMessage = new builder.Message(session).addAttachment(card);
@@ -313,6 +324,17 @@ bot.dialog('startMeditation', function (session, args, next) {
     var reply = createEvent("startMeditation", "", session.message.address);
     session.endDialog(reply);
     //session.endDialog("This would start meditation right away.<br/>For now, say 'next' to continue.");
+    // var meditation = new builder.AudioCard(session)
+    //     .title('I am your father')
+    //     .subtitle('Star Wars: Episode V - The Empire Strikes Back')
+    //     .text('The Empire Strikes Back (also known as Star Wars: Episode V – The Empire Strikes Back) is a 1980 American epic space opera film directed by Irvin Kershner. Leigh Brackett and Lawrence Kasdan wrote the screenplay, with George Lucas writing the film\'s story and serving as executive producer. The second installment in the original Star Wars trilogy, it was produced by Gary Kurtz for Lucasfilm Ltd. and stars Mark Hamill, Harrison Ford, Carrie Fisher, Billy Dee Williams, Anthony Daniels, David Prowse, Kenny Baker, Peter Mayhew and Frank Oz.')
+    //     .image(builder.CardImage.create(session, 'https://upload.wikimedia.org/wikipedia/en/3/3c/SW_-_Empire_Strikes_Back.jpg'))
+    //     .media([
+    //         { url: 'http://www.wavlist.com/movies/004/father.wav' }
+    //     ])
+    //     .buttons([
+    //         builder.CardAction.openUrl(session, 'https://en.wikipedia.org/wiki/The_Empire_Strikes_Back', 'Read More')
+    //     ]);
 })
 .triggerAction({
     matches: /^start [a]?[\s]?meditation$/i,
