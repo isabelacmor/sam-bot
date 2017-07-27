@@ -305,7 +305,7 @@ bot.dialog('playVideo', function (session, args, next) {
     session.endDialog(reply);
 })
 .triggerAction({
-    matches: /^play video$/i,
+    matches: /^play [a]?[\s]?video$/i,
 });
 
 // The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
@@ -315,7 +315,7 @@ bot.dialog('startMeditation', function (session, args, next) {
     //session.endDialog("This would start meditation right away.<br/>For now, say 'next' to continue.");
 })
 .triggerAction({
-    matches: /^start meditation$/i,
+    matches: /^start [a]?[\s]?meditation$/i,
 });
 
 // The dialog stack is cleared and this dialog is invoked when the user enters 'help'.
@@ -339,7 +339,7 @@ bot.on("event", function (event) {
     }
     else if (event.name === "webSentiment") {
       if(session.userData[username_key]) {
-        msg.text("Sam is feeling sad");
+        msg.text("You seem to be a little down 🙁 You could 'play music', 'play a video', or 'start a meditation' to clear your mind for a bit.");
       } else {
         // If the user hasn't gone through OOBE yet, ignore this event.
         msg.text("Hi!");
@@ -418,11 +418,4 @@ bot.dialog('promptSendText', [
 ])
 .triggerAction({
   matches: /^text [a]?[\s]?friend$/i,
-});
-
-bot.dialog('sad', function (session) {
-  session.endDialog('sad dialog')
-})
-.triggerAction({
-  matches: /^Sam is feeling sad$/i,
 });
