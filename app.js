@@ -134,20 +134,42 @@ bot.dialog('OOBE', [
       //       { url: 'https://github.com/isabellacmor/sam-bot/blob/master/images/bunny.gif?raw=true' }
       //   ])
       //   ;
-      var card = new builder.ThumbnailCard(session)
-        .title(aboutSam)
-        .subtitle(tipSam)
-        //.text('Build and connect intelligent bots to interact with your users naturally wherever they are, from text/sms to Skype, Slack, Office 365 mail and other popular services.')
-        .images([
-            builder.CardImage.create(session, 'https://github.com/isabellacmor/sam-bot/blob/master/images/allbunnies.png?raw=true')
-        ])
-        // .buttons([
-        //     builder.CardAction.openUrl(session, 'https://docs.microsoft.com/bot-framework/', 'Get Started')
-        // ])
-        ;
+      var card = new builder.Message(session)
+    .addAttachment({
+        contentType: "application/vnd.microsoft.card.adaptive",
+        content: {
+            type: "AdaptiveCard",
+            //speak: "<s>Your  meeting about \"Adaptive Card design session\"<break strength='weak'/> is starting at 12:30pm</s><s>Do you want to snooze <break strength='weak'/> or do you want to send a late notification to the attendees?</s>",
+               body: [
+                 {
+                     "type": "Container",
+                     "items": [
+                         {
+                         "type": "Image",
+                         "url": "https://github.com/isabellacmor/sam-bot/blob/master/images/allbunnies.png?raw=true",
+                         "size": "large",
+                         "style": "person"
+                       },
+                       {
+                         "type": "TextBlock",
+                         "text": "Hi, I'm Sam!",
+                         "weight": "bolder",
+                         "size": "medium"
+                       },
+                       {
+                         "type": "TextBlock",
+                         "text": "I'm the buddy in your browser, looking out for you and making sure you're happy as a clam!\n\nIf you're not feeling your best, you can always come here to chat with me.\n\nI'll also keep an eye on your mood throughout the day and let you know if I think you need a little emotional break.",
+                         "weight": "normal",
+                         "size": "medium"
+                       }
+                     ]
+                   }
+                  ]
+                }
+            });
         // Attach the card to the reply message
         var welcomeMessage = new builder.Message(session).addAttachment(card);
-        session.send(welcomeMessage);
+        session.send(card);
 
         session.sendTyping();
         setTimeout(function(){
