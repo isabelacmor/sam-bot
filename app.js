@@ -338,15 +338,13 @@ bot.on("event", function (event) {
       handledEvent = true;
     }
     else if (event.name === "webSentiment") {
-      msg.text("Sam is feeling sad 🙁  Want to look at some happier sites?");
-      handledEvent = true;
-    } else if(event.name === "startState") {
-      if(event.value) {
-        bot.beginDialog("askForFeeling");
+      if(session.userData[username_key]) {
+        msg.text("Sam is feeling sad");
       } else {
-        bot.beginDialog("OOBE");
+        // If the user hasn't gone through OOBE yet, ignore this event.
+        msg.text("Hi!");
       }
-      handledEvent = false;
+      handledEvent = true;
     }
 
     if (handledEvent) {
@@ -420,4 +418,11 @@ bot.dialog('promptSendText', [
 ])
 .triggerAction({
   matches: /^text [a]?[\s]?friend$/i,
+});
+
+bot.dialog('sad', function (session) {
+  session.endDialog('sad dialog')
+})
+.triggerAction({
+  matches: /^Sam is feeling sad$/i,
 });
