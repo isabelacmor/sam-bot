@@ -43,7 +43,7 @@ var friendnames_key = "FriendNamesKey";
 var savedAddress;
 
 // Feelings definitions
-var feelingsArray = ["Sad", 'Lonely', 'Anxious'];
+var feelingsArray = ["Sad", 'Lonely', 'Anxious', 'Happy'];
 var feelingMessage = new builder.Message()
   .text("How are you feeling?")
   .addAttachment({
@@ -60,6 +60,11 @@ var feelingMessage = new builder.Message()
       text: '',
       thumbnailUrl: 'https://github.com/isabellacmor/sam-bot/blob/master/images/depressed.png?raw=true',
       actions: [ { title: 'Anxious', message: 'Anxious' }]
+  })
+  .addAttachment({
+      text: '',
+      thumbnailUrl: 'https://github.com/isabellacmor/sam-bot/blob/master/images/happy.png?raw=true',
+      actions: [ { title: 'Happy', message: 'Happy' }]
   });
 
 // Phrases
@@ -110,36 +115,38 @@ var bot = new builder.UniversalBot(connector
   },  // Initial validation + prompt response
       function (session, results) {
           session.userData[currentFeeling_key] = results.response.entity.toLowerCase();
-          session.send(phrases.validating[getRandomInt(0, phrases.validating.length-1)]);
-          session.beginDialog('promptDiscussion');
+          if(results.response.entity === 'Happy') {
+            session.endDialog("That's great! I'm happy that you're happy 😊");
+          } else {
+            session.send(phrases.validating[getRandomInt(0, phrases.validating.length-1)]);
+            session.beginDialog('promptDiscussion');
+          }
       },
       function (session, results) {
           // Process request and do action request by user.
-          session.beginDialog('promptActivity');
+          if(session.userData[currentFeeling_key] === 'Happy') {
+            session.endDialog();
+          } else {
+            session.beginDialog('promptActivity');
+          }
       }, function (session, results) {
-        session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
-        session.endDialog();
+        if(session.userData[currentFeeling_key] === 'Happy') {
+          session.endDialog();
+        } else {
+          session.send(phrases.terminating[getRandomInt(0, phrases.terminating.length-1)]);
+          session.endDialog();
+        }
       }
 ]);
 
 // OOBE dialog
 bot.dialog('OOBE', [
     function (session) {
-      // Welcome message + about Sam
-      // var card = new builder.AnimationCard(session)
-      //   .title(aboutSam)
-      //   .subtitle(tipSam)
-      //   .image(builder.CardImage.create(session, 'https://github.com/isabellacmor/sam-bot/blob/master/images/allbunnies.png?raw=true'))
-      //   .media([
-      //       { url: 'https://github.com/isabellacmor/sam-bot/blob/master/images/bunny.gif?raw=true' }
-      //   ])
-      //   ;
       var card = new builder.Message(session)
-    .addAttachment({
+      .addAttachment({
         contentType: "application/vnd.microsoft.card.adaptive",
         content: {
             type: "AdaptiveCard",
-            //speak: "<s>Your  meeting about \"Adaptive Card design session\"<break strength='weak'/> is starting at 12:30pm</s><s>Do you want to snooze <break strength='weak'/> or do you want to send a late notification to the attendees?</s>",
                body: [
                  {
                      "type": "Container",
