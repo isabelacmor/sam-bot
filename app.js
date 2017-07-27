@@ -338,12 +338,7 @@ bot.on("event", function (event) {
       handledEvent = true;
     }
     else if (event.name === "webSentiment") {
-      if(session.userData[username_key]) {
-        msg.text("You seem to be a little down 🙁 You could 'play music', 'play a video', or 'start a meditation' to clear your mind for a bit.");
-      } else {
-        // If the user hasn't gone through OOBE yet, ignore this event.
-        msg.text("Hi!");
-      }
+      msg.text("You seem to be a little down 🙁 You could 'play music', 'play a video', or 'start a meditation' to clear your mind for a bit.");
       handledEvent = true;
     }
 
